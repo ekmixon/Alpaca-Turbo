@@ -203,8 +203,7 @@ def get_personas():
 
 @app.route("/personas/<string:name>", methods=["GET"])
 def get_persona(name):
-    persona_data = personas.get(name)
-    if persona_data:
+    if persona_data := personas.get(name):
         return jsonify(persona_data)
     else:
         return jsonify({"error": "Persona not found."})

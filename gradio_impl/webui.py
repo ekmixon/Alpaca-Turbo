@@ -2,6 +2,7 @@
 """
 Main launcher
 """
+
 import sys
 
 import gradio as gr
@@ -32,6 +33,5 @@ try:
         server_port=8000, server_name="0.0.0.0")
     ASSISTANT.program.killx()
 except Exception as error:
-    pass
     ASSISTANT.program.killx()
     raise error

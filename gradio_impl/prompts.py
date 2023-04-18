@@ -34,10 +34,7 @@ class Personas:
         return list(self.bots.keys())
 
     def get(self, name):
-        if name in self.bots:
-            # eprint(self.bots[name])
-            return list(self.bots[name].values())
-        return None
+        return list(self.bots[name].values()) if name in self.bots else None
 
 
 class History:
@@ -114,7 +111,10 @@ class History:
     def append(self, new_item):
         """append"""
         self.load()
-        if new_item not in self.data:
-            if new_item not in [[],[None,None],[None,None]]:
-                self.data.append(new_item)
+        if new_item not in self.data and new_item not in [
+            [],
+            [None, None],
+            [None, None],
+        ]:
+            self.data.append(new_item)
         self.save()

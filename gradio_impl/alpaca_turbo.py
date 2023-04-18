@@ -98,7 +98,7 @@ class Assistant:
 
         self.persona = "chat transcript between human and a bot named devil and the bot remembers everything from previous response"
 
-        self.prompt = f"""Below is an instruction that describes a task. Write a response that appropriately completes the request."""
+        self.prompt = """Below is an instruction that describes a task. Write a response that appropriately completes the request."""
 
         self.format = (
             """\n### Instruction:\n{instruction}\n\n### Response:\n{response}"""
@@ -148,7 +148,7 @@ class Assistant:
 
     @property
     def command(self):
-        command = [
+        return [
             Assistant.get_bin_path(),
             # "--color",
             # "-i",
@@ -167,10 +167,9 @@ class Assistant:
             "--n_predict",
             f"{self.n_predict}",
             "-m",
-            f"{self.model_path}" ,
+            f"{self.model_path}",
             "--interactive-start",
         ]
-        return command
 
     def prep_bot_input(self):
         """
@@ -180,10 +179,10 @@ class Assistant:
 
         history = self.chat_history if self.enable_history else [self.chat_history[-1]]
 
-        prompt = "" 
-        for instr, resp in history:
-            prompt += self.format.format(instruction=instr, response=resp)
-
+        prompt = "".join(
+            self.format.format(instruction=instr, response=resp)
+            for instr, resp in history
+        )
         # prompt = prompt[-1*self.history_size:] if len(prompt) > self.history_size else prompt
         prompt = character + prompt
 
@@ -224,7 +223,7 @@ class Assistant:
 
         model_done = False
         for _ in track(range(40), "Loading Model"):
-            data = self.program.recv(1).decode("utf-8") if not model_done else None
+            data = None if model_done else self.program.recv(1).decode("utf-8")
             model_done = True if data == "d" else model_done
             if model_done:
                 continue
@@ -239,7 +238,7 @@ class Assistant:
         pre_recv_hook=None,
         post_recv_hook=None,
     ):
-        _ = self.prep_model() if not self.is_ready else None
+        _ = None if self.is_ready else self.prep_model()
         if not self.is_ready:
             raise FileNotFoundError(
                 f"Cannot locate the specified model : {Assistant.model_path}\n Did you put the correct path in settings=>model_path?\n"
@@ -311,7 +310,7 @@ class Assistant:
                     if len(char) == 1 and char[0] <= 0x7E and char[0] >= 0x21:
                         char = char.decode("utf-8")
                         char_old = b""
-                    elif len(char) in [4, 6]:  # If 4 byte code or 6 byte code
+                    elif len(char) in {4, 6}:  # If 4 byte code or 6 byte code
                         char = char.decode("utf-8")
                         char_old = b""
                     else:
@@ -334,7 +333,7 @@ class Assistant:
         run
         """
         tend = 0
-        _ = self.prep_model() if not self.is_ready else None
+        _ = None if self.is_ready else self.prep_model()
         tstart = time()
 
         self.program.recvuntil(">")

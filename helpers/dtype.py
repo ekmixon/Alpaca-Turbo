@@ -44,10 +44,8 @@ class Conversation:
 
     def get_prompt(self):
         """Return the prompt filled with conversation"""
-        convo = []
         data = self.format.format(instruction=self.instruction, response=self.response)
-        convo.append(data)
-        return convo
+        return [data]
 
     @staticmethod
     def save(conversations):  # list["Conversation"]) -> None:
@@ -138,7 +136,4 @@ class Personas:
         return list(self.bots.keys())
 
     def get(self, name):
-        if name in self.bots:
-            # eprint(self.bots[name])
-            return list(self.bots[name].values())
-        return None
+        return list(self.bots[name].values()) if name in self.bots else None

@@ -94,8 +94,7 @@ class Assistant:
 
     def get_conv_logs(self):
         """conversation logs"""
-        data = load_all_conversations()
-        return data
+        return load_all_conversations()
 
     def clear_chat(self):
         """clear current history context"""
@@ -124,11 +123,11 @@ class Assistant:
 
     def list_available_models(self, directory_path="models", extension="bin"):
         """Returns a list of file names with the given extension  given dir"""
-        file_list = []
-        for file in os.listdir(directory_path):
-            if file.endswith(extension):
-                file_list.append(os.path.join(directory_path, file))
-        return file_list
+        return [
+            os.path.join(directory_path, file)
+            for file in os.listdir(directory_path)
+            if file.endswith(extension)
+        ]
 
     @staticmethod
     def get_bin_path():
@@ -160,7 +159,7 @@ class Assistant:
 
     @property
     def command(self):
-        command = [
+        return [
             Assistant.get_bin_path(),
             # "--color",
             "-i",
@@ -188,7 +187,6 @@ class Assistant:
             # "--interactive-start",
             "--interactive-first",
         ]
-        return command
 
     def load_model(self):
         """load binary in memory"""
@@ -209,7 +207,7 @@ class Assistant:
                 if is_loaded:
                     continue
                 ppt = self.process.read(1)
-                is_loaded = b"d" == ppt
+                is_loaded = ppt == b"d"
             for _ in range(12):
                 (self.process.readline())
             self.process.recvuntil(self.end_marker)
@@ -233,7 +231,7 @@ class Assistant:
 
         if command == "generate":
             is_possible = self.current_state == "prompt"
-        if command == "stop":
+        elif command == "stop":
             is_possible = self.current_state == "generating"
         return is_possible
 
@@ -255,8 +253,7 @@ class Assistant:
         final_prompt_2_send = []
         data2use = self.history if self.enable_history else [self.history[-1]]
         for convo in data2use:
-            for sequence in convo.get_prompt():
-                final_prompt_2_send.append(sequence)
+            final_prompt_2_send.extend(iter(convo.get_prompt()))
         final_prompt_2_send = "".join(final_prompt_2_send)
         if prompt.preprompt:
             final_prompt_2_send = [prompt.preprompt, final_prompt_2_send]
@@ -389,11 +386,9 @@ class Assistant:
     def send_conv(self, preprompt, fmt, prompt):
         """function to simplify interface"""
 
-        if self.old_preprompt is None:
+        if self.old_preprompt is None or self.old_preprompt != preprompt:
             self.old_preprompt = preprompt
-        elif self.old_preprompt is not None and self.old_preprompt != preprompt:
-            self.old_preprompt = preprompt
-        elif self.old_preprompt == preprompt:
+        else:
             preprompt = None
 
         preprompt = preprompt if preprompt is not None else None
@@ -402,8 +397,7 @@ class Assistant:
         self.is_first_request = False
         fmt = self.format if fmt is None else fmt
         conv = Conversation(preprompt, fmt, prompt)
-        resp = self.chatbot(conv)
-        return resp
+        return self.chatbot(conv)
 
     @staticmethod
     def repl():
@@ -414,11 +408,11 @@ class Assistant:
         fmt = assistant.format
         # assistant.pre_prompt = ""
         preprompt = assistant.pre_prompt
+        preprompt = ""
+
         while True:
             # print("=====")
             prompt = input(">>>>>> ")
-            preprompt = ""
-
             resp = assistant.send_conv(preprompt, fmt, prompt)
 
             for char in resp:

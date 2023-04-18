@@ -57,9 +57,7 @@ class Process(PopenSpawn):
         return info
 
     def recv(self, *cfg):
-        data = self.read(*cfg)
-        # print(data)
-        return data
+        return self.read(*cfg)
 
     def interactive(self, *cfg):
         return self.interact(*cfg)

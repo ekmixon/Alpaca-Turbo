@@ -21,7 +21,7 @@ def status():
 
 def list_models():
     "List Available models"
-    resp = sess.get(URL + "list_models")
+    resp = sess.get(f"{URL}list_models")
     msg = f"Testing list_models ({resp.status_code})"
     eprint(msg)
     eprint("\t\t" + str(resp.json()))
