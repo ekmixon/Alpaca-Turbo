@@ -26,7 +26,6 @@ def print_header():
 
 
 def download_model():
-    url = "https://huggingface.co/Sosaka/Alpaca-native-4bit-ggml/resolve/main/ggml-alpaca-7b-q4.bin"
     filename = "ggml-alpaca-7b-q4.bin"
 
     if os.path.exists(filename):
@@ -34,6 +33,7 @@ def download_model():
 
     choice = input("The model has not been downloaded. Would you like to download it now? (y/n)")
     if choice.lower() == "y":
+        url = "https://huggingface.co/Sosaka/Alpaca-native-4bit-ggml/resolve/main/ggml-alpaca-7b-q4.bin"
         with Progress() as progress:
             task = progress.add_task("Downloading...", start=False)
             with urllib.request.urlopen(url) as response, open(filename, "wb") as out_file:

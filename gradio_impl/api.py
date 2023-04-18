@@ -50,14 +50,10 @@ class CompletionResponse(BaseModel):
 
 class Model:
     def get_completion(self, model, prompt, max_tokens, temperature, stop) -> str:
-        res = ""
-        for char in assistant.ask_bot(prompt):
-            res += char
-        return res
+        return "".join(assistant.ask_bot(prompt))
 
     def get_completion_tokens(self, model, prompt, max_tokens, temperature, stop):
-        for char in assistant.ask_bot(prompt):
-            yield char
+        yield from assistant.ask_bot(prompt)
 
 
 model = Model()

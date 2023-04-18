@@ -744,7 +744,7 @@ class ArenaUI:
             response += out
 
             # Update the chatbox with live input
-            history[len(history)-1][0] = response
+            history[-1][0] = response
             self.chatwindowstate = history
             yield history
 
